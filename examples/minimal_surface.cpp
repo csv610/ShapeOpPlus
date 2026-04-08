@@ -6,109 +6,62 @@
  * on all triangles.
  */
 
-#include "Solver.h"
+#include "common.h"
 #include "Constraint.h"
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace ShapeOp;
 
-int main() {
-    const int grid_size = 20;
-    const int num_points = grid_size * grid_size;
-    Matrix3X points(3, num_points);
-    
-    // 1. Initialize grid points with a saddle-shaped boundary
-    for (int y = 0; y < grid_size; ++y) {
-        for (int x = 0; x < grid_size; ++x) {
-            int id = y * grid_size + x;
-            Scalar u = (Scalar)x / (grid_size - 1);
-            Scalar v = (Scalar)y / (grid_size - 1);
-            
-            // Saddle: z = (x-0.5)^2 - (y-0.5)^2
-            Scalar z = (u - 0.5) * (u - 0.5) - (v - 0.5) * (v - 0.5);
-            
-            // For internal points, start at z=0 (or anywhere)
-            if (x > 0 && x < grid_size - 1 && y > 0 && y < grid_size - 1) {
-                z = 0.0;
-            }
-            
-            points.col(id) = Vector3(u, v, z);
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " input.off [output.off]" << std::endl;
+        return 1;
+    }
+
+    std::string input_file = argv[1];
+    std::string output_file = (argc > 2) ? argv[2] : "out.off";
+
+    Mesh mesh;
+    if (!readOFF(input_file, mesh)) {
+        std::cerr << "Error: Could not read " << input_file << std::endl;
+        return 1;
+    }
+
+    // Check if all faces are triangles
+    for (const auto& face : mesh.faces) {
+        if (face.size() != 3) {
+            std::cerr << "Error: Minimal surface example requires a triangle mesh." << std::endl;
+            return 1;
         }
     }
 
     Solver solver;
-    solver.setPoints(points);
+    solver.setPoints(mesh.vertices);
 
     // 2. Add AreaConstraint to all triangles with target area 0.0
-    // We set rangeMin and rangeMax to 0.0 to force the area to zero.
     Scalar area_weight = 1.0;
-    for (int y = 0; y < grid_size - 1; ++y) {
-        for (int x = 0; x < grid_size - 1; ++x) {
-            int i00 = y * grid_size + x;
-            int i10 = y * grid_size + (x + 1);
-            int i01 = (y + 1) * grid_size + x;
-            int i11 = (y + 1) * grid_size + (x + 1);
-
-            // Triangle 1
-            std::vector<int> tri1 = {i00, i10, i11};
-            solver.addConstraint(std::make_shared<AreaConstraint>(tri1, area_weight, points, 0.0, 0.0));
-
-            // Triangle 2
-            std::vector<int> tri2 = {i00, i11, i01};
-            solver.addConstraint(std::make_shared<AreaConstraint>(tri2, area_weight, points, 0.0, 0.0));
-        }
+    for (const auto& t : mesh.faces) {
+        std::vector<int> ids = {t[0], t[1], t[2]};
+        solver.addConstraint(std::make_shared<AreaConstraint>(ids, area_weight, mesh.vertices, 0.0, 0.0));
     }
 
     // 3. Fix boundary nodes using ClosenessConstraint
-    Scalar fix_weight = 100.0;
-    for (int y = 0; y < grid_size; ++y) {
-        for (int x = 0; x < grid_size; ++x) {
-            if (x == 0 || x == grid_size - 1 || y == 0 || y == grid_size - 1) {
-                int id = y * grid_size + x;
-                std::vector<int> ids = {id};
-                solver.addConstraint(std::make_shared<ClosenessConstraint>(ids, fix_weight, points));
-            }
-        }
+    Scalar fix_weight = 1000.0;
+    std::set<int> boundary = findBoundaryVertices(mesh);
+    for (int idx : boundary) {
+        solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{idx}, fix_weight, mesh.vertices));
     }
 
     // 4. Initialize and solve
-    auto calculate_total_area = [&](const Matrix3X& v) {
-        Scalar total = 0;
-        for (int y = 0; y < grid_size - 1; ++y) {
-            for (int x = 0; x < grid_size - 1; ++x) {
-                int i00 = y * grid_size + x;
-                int i10 = y * grid_size + (x + 1);
-                int i01 = (y + 1) * grid_size + x;
-                int i11 = (y + 1) * grid_size + (x + 1);
-                // Triangle 1
-                Vector3 e1 = v.col(i10) - v.col(i00);
-                Vector3 e2 = v.col(i11) - v.col(i00);
-                total += 0.5 * e1.cross(e2).norm();
-                // Triangle 2
-                Vector3 e3 = v.col(i11) - v.col(i00);
-                Vector3 e4 = v.col(i01) - v.col(i00);
-                total += 0.5 * e3.cross(e4).norm();
-            }
-        }
-        return total;
-    };
-
-    Scalar initial_area = calculate_total_area(points);
     solver.initialize();
     std::cout << "Solving for minimal surface..." << std::endl;
     solver.solve(100); 
 
-    const Matrix3X& result = solver.getPoints();
-    Scalar final_area = calculate_total_area(result);
-
-    std::cout << "\n--- Optimization Metrics ---" << std::endl;
-    std::cout << "Metric               | Value" << std::endl;
-    std::cout << "------------------------------------------" << std::endl;
-    printf("Initial Total Area   | %.6f\n", initial_area);
-    printf("Final Total Area     | %.6f\n", final_area);
-    printf("Reduction (%%)        | %.2f%%\n", (1.0 - final_area/initial_area)*100.0);
-    std::cout << "------------------------------------------" << std::endl;
+    mesh.vertices = solver.getPoints();
+    writeOFF(output_file, mesh);
+    std::cout << "Result saved to: " << output_file << std::endl;
 
     return 0;
 }

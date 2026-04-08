@@ -1,15 +1,14 @@
 /**
- * ShapeOp Example: 2D Triangle Area Equalization
+ * ShapeOp Example: Triangle Area Equalization
  * 
  * This example demonstrates how to:
- * 1. Define a 2D triangle mesh.
+ * 1. Read a triangle mesh from an OFF file.
  * 2. Calculate the average area of all triangles.
- * 3. Use AreaConstraint with custom range scaling to force all triangles
- *    towards that average area.
+ * 3. Use AreaConstraint to force all triangles towards that average area.
  * 4. Fix boundary points to maintain the overall shape.
  */
 
-#include "Solver.h"
+#include "common.h"
 #include "Constraint.h"
 #include <iostream>
 #include <vector>
@@ -18,104 +17,66 @@
 
 using namespace ShapeOp;
 
-// Helper to calculate triangle area in 3D (assuming they lie in XY plane or similar)
 Scalar calculate_triangle_area(const Vector3& p0, const Vector3& p1, const Vector3& p2) {
     Vector3 v1 = p1 - p0;
     Vector3 v2 = p2 - p0;
     return 0.5 * v1.cross(v2).norm();
 }
 
-int main() {
-    // 1. Create a 2D mesh: a 3x3 grid of points forming 8 triangles
-    // Initially, let's make it irregular to show the equalization
-    const int grid_res = 3;
-    const int num_points = grid_res * grid_res;
-    Matrix3X points(3, num_points);
-    
-    for (int y = 0; y < grid_res; ++y) {
-        for (int x = 0; x < grid_res; ++x) {
-            int id = y * grid_res + x;
-            // Add some "noise" to the initial positions to make areas unequal
-            Scalar noise_x = (x == 1 && y == 1) ? 0.3 : 0.0;
-            Scalar noise_y = (x == 1 && y == 1) ? -0.2 : 0.0;
-            points.col(id) = Vector3(x + noise_x, y + noise_y, 0.0);
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " input.off [output.off]" << std::endl;
+        return 1;
+    }
+
+    std::string input_file = argv[1];
+    std::string output_file = (argc > 2) ? argv[2] : "out.off";
+
+    Mesh mesh;
+    if (!readOFF(input_file, mesh)) {
+        std::cerr << "Error: Could not read " << input_file << std::endl;
+        return 1;
+    }
+
+    // Check if all faces are triangles
+    for (const auto& face : mesh.faces) {
+        if (face.size() != 3) {
+            std::cerr << "Error: Area equalization example requires a triangle mesh." << std::endl;
+            return 1;
         }
     }
 
-    // Define triangle indices (2 triangles per square cell)
-    struct Triangle { int v0, v1, v2; };
-    std::vector<Triangle> triangles;
-    for (int y = 0; y < grid_res - 1; ++y) {
-        for (int x = 0; x < grid_res - 1; ++x) {
-            int p0 = y * grid_res + x;
-            int p1 = p0 + 1;
-            int p2 = (y + 1) * grid_res + x;
-            int p3 = p2 + 1;
-            triangles.push_back({p0, p1, p3});
-            triangles.push_back({p0, p3, p2});
-        }
-    }
-
-    // 2. Calculate initial areas and find the average
     std::vector<Scalar> initial_areas;
     Scalar total_area = 0;
-    for (const auto& t : triangles) {
-        Scalar a = calculate_triangle_area(points.col(t.v0), points.col(t.v1), points.col(t.v2));
+    for (const auto& t : mesh.faces) {
+        Scalar a = calculate_triangle_area(mesh.vertices.col(t[0]), mesh.vertices.col(t[1]), mesh.vertices.col(t[2]));
         initial_areas.push_back(a);
         total_area += a;
     }
-    Scalar avg_area = total_area / triangles.size();
+    Scalar avg_area = total_area / mesh.faces.size();
 
-    std::cout << "Initial average area: " << avg_area << std::endl;
-    std::cout << "Initial individual areas: ";
-    for (Scalar a : initial_areas) std::cout << std::fixed << std::setprecision(3) << a << " ";
-    std::cout << "\n" << std::endl;
-
-    // 3. Setup Solver and Constraints
     Solver solver;
-    solver.setPoints(points);
+    solver.setPoints(mesh.vertices);
 
-    // Add AreaConstraint to each triangle
-    // AreaConstraint in ShapeOp uses rangeMin/rangeMax as factors for det(F).
-    // det(F) = CurrentArea / InitialArea.
-    // To reach TargetArea, we want det(F) = TargetArea / InitialArea.
-    for (size_t i = 0; i < triangles.size(); ++i) {
-        const auto& t = triangles[i];
-        std::vector<int> ids = {t.v0, t.v1, t.v2};
+    for (size_t i = 0; i < mesh.faces.size(); ++i) {
+        const auto& t = mesh.faces[i];
+        std::vector<int> ids = {t[0], t[1], t[2]};
         Scalar target_ratio = avg_area / initial_areas[i];
-        
-        // Setting rangeMin and rangeMax to the same value forces the area to exactly that ratio
-        auto area_cons = std::make_shared<AreaConstraint>(ids, 1.0, points, target_ratio, target_ratio);
+        auto area_cons = std::make_shared<AreaConstraint>(ids, 1.0, mesh.vertices, target_ratio, target_ratio);
         solver.addConstraint(area_cons);
     }
 
-    // 4. Anchor the boundary points strictly
-    // Using a very high weight (e.g., 1000.0) effectively makes these points immovable.
-    for (int i = 0; i < num_points; ++i) {
-        int x = i % grid_res;
-        int y = i / grid_res;
-        if (x == 0 || x == grid_res - 1 || y == 0 || y == grid_res - 1) {
-            solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{i}, 1000.0, points));
-        }
+    std::set<int> boundary = findBoundaryVertices(mesh);
+    for (int idx : boundary) {
+        solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{idx}, 1000.0, mesh.vertices));
     }
 
-    // 5. Solve
     solver.initialize();
     solver.solve(100); 
 
-    const Matrix3X& final_points = solver.getPoints();
-    
-    // Verification: Check if a boundary point (e.g., P0) moved
-    Scalar boundary_displacement = (final_points.col(0) - points.col(0)).norm();
-    std::cout << "Boundary Point P0 displacement: " << boundary_displacement << " (should be ~0)" << std::endl;
-    
-    // Calculate final areas
-    std::cout << "Final individual areas (should be close to " << avg_area << "):" << std::endl;
-    for (const auto& t : triangles) {
-        Scalar a = calculate_triangle_area(final_points.col(t.v0), final_points.col(t.v1), final_points.col(t.v2));
-        std::cout << std::fixed << std::setprecision(3) << a << " ";
-    }
-    std::cout << std::endl;
+    mesh.vertices = solver.getPoints();
+    writeOFF(output_file, mesh);
+    std::cout << "Saved results to " << output_file << std::endl;
 
     return 0;
 }

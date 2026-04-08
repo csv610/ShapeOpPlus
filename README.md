@@ -34,21 +34,21 @@ make
 
 ### 3. Explore Examples
 We have provided several new examples to showcase the library's capabilities:
-*   **C++ Cloth Simulation:** `./examples/cloth_simulation` (Dynamic physics)
-*   **C++ Capabilities Showcase:** `./examples/capabilities_showcase` (Advanced constraints)
+*   **C++ Cloth Simulation:** `./examples/cloth_simulation input.off [output.off]` (Dynamic physics)
+*   **C++ Capabilities Showcase:** `./examples/capabilities_showcase input.off [output.off]` (Advanced constraints)
 *   **Python Catenary Curve:** `PYTHONPATH=libShapeOp/bindings/python python3 examples/catenary_curve.py`
-*   **Triangle Area Equalization:** `./examples/area_equalization` (Mesh regularization)
-*   **Equilateral Regularization:** `./examples/equilateral_regularization` (Mesh quality)
-*   **Cyclic Quads:** `./examples/circular_quads` (Architectural geometry)
-*   **As-Similar-As-Possible Mapping:** `./examples/as_similar_as_possible_mapping source.off target.off` (Shape transfer)
-*   **As-Rigid-As-Possible Mapping:** `./examples/as_rigid_as_possible_mapping source.off target.off` (Rigid transfer)
-*   **As-Conformal-As-Possible Mapping:** `./examples/as_conformal_as_possible_mapping source.off target.off` (Angle transfer)
-*   **As-Area-Preserving Mapping:** `./examples/as_area_preserving_as_possible_mapping source.off target.off` (Area transfer)
-*   **As-Smooth-As-Possible Mapping:** `./examples/as_smooth_as_possible_mapping source.off target.off` (Smoothness transfer)
-*   **Minimal Surface:** `./examples/minimal_surface` (Soap film finding)
-*   **Fair Mesh Design:** `./examples/fair_mesh_design` (Surface smoothing)
-*   **Quad Planarization:** `./examples/quad_planarization` (Face planarization)
-*   **Geodesic Path:** `./examples/geodesic_path` (Shortest path on sphere)
+*   **Triangle Area Equalization:** `./examples/area_equalization input.off [output.off]` (Mesh regularization)
+*   **Equilateral Regularization:** `./examples/equilateral_regularization input.off [output.off]` (Mesh quality)
+*   **Cyclic Quads:** `./examples/circular_quads input.off [output.off]` (Architectural geometry)
+*   **As-Similar-As-Possible Mapping:** `./examples/as_similar_as_possible_mapping source.off target.off [output.off]` (Shape transfer)
+*   **As-Rigid-As-Possible Mapping:** `./examples/as_rigid_as_possible_mapping source.off target.off [output.off]` (Rigid transfer)
+*   **As-Conformal-As-Possible Mapping:** `./examples/as_conformal_as_possible_mapping source.off target.off [output.off]` (Angle transfer)
+*   **As-Area-Preserving Mapping:** `./examples/as_area_preserving_as_possible_mapping source.off target.off [output.off]` (Area transfer)
+*   **As-Smooth-As-Possible Mapping:** `./examples/as_smooth_as_possible_mapping source.off target.off [output.off]` (Smoothness transfer)
+*   **Minimal Surface:** `./examples/minimal_surface input.off [output.off]` (Soap film finding)
+*   **Fair Mesh Design:** `./examples/fair_mesh_design input.off [output.off]` (Surface smoothing)
+*   **Quad Planarization:** `./examples/quad_planarization input.off [output.off]` (Face planarization)
+*   **Geodesic Path:** `./examples/geodesic_path input.off [output.off]` (Shortest path on sphere)
 
 ---
 

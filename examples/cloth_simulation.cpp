@@ -1,65 +1,65 @@
 /**
- * ShapeOp Example: 3x3 Cloth Grid Simulation
+ * ShapeOp Example: Cloth Simulation
  * 
  * This example demonstrates how to:
- * 1. Initialize a grid of points.
- * 2. Add structural "Edge" constraints (springs).
- * 3. Add "Closeness" constraints to fix points in space.
+ * 1. Read a mesh from an OFF file.
+ * 2. Add structural "Edge" constraints (springs) for all edges.
+ * 3. Add "Closeness" constraints to fix boundary points in space.
  * 4. Apply external forces (Gravity).
  * 5. Run a dynamic (time-integrated) simulation.
  */
 
-#include "Solver.h"
+#include "common.h"
 #include "Constraint.h"
 #include "Force.h"
 #include <iostream>
 #include <iomanip>
+#include <set>
 
 using namespace ShapeOp;
 
-int main() {
-    const int grid_size = 3;
-    const int num_points = grid_size * grid_size;
-    Matrix3X points(3, num_points);
-    
-    // 1. Create a 3x3 horizontal grid in the XY plane
-    for (int y = 0; y < grid_size; ++y) {
-        for (int x = 0; x < grid_size; ++x) {
-            int id = y * grid_size + x;
-            points.col(id) = Vector3(x, y, 0.0);
-        }
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " input.off [output.off]" << std::endl;
+        return 1;
+    }
+
+    std::string input_file = argv[1];
+    std::string output_file = (argc > 2) ? argv[2] : "out.off";
+
+    Mesh mesh;
+    if (!readOFF(input_file, mesh)) {
+        std::cerr << "Error: Could not read " << input_file << std::endl;
+        return 1;
     }
 
     Solver solver;
-    solver.setPoints(points);
+    solver.setPoints(mesh.vertices);
 
     // 2. Add structural constraints (Edges)
     Scalar weight = 1.0;
-    for (int y = 0; y < grid_size; ++y) {
-        for (int x = 0; x < grid_size; ++x) {
-            int id = y * grid_size + x;
-            // Horizontal edge
-            if (x + 1 < grid_size) {
-                std::vector<int> ids = {id, id + 1};
-                solver.addConstraint(std::make_shared<EdgeStrainConstraint>(ids, weight, points));
-            }
-            // Vertical edge
-            if (y + 1 < grid_size) {
-                std::vector<int> ids = {id, id + grid_size};
-                solver.addConstraint(std::make_shared<EdgeStrainConstraint>(ids, weight, points));
-            }
+    std::set<std::pair<int, int>> unique_edges;
+    for (const auto& face : mesh.faces) {
+        for (size_t i = 0; i < face.size(); ++i) {
+            int v1 = face[i];
+            int v2 = face[(i + 1) % face.size()];
+            if (v1 > v2) std::swap(v1, v2);
+            unique_edges.insert({v1, v2});
         }
     }
 
-    // 3. Fix the top two corners (y=2, x=0 and x=2)
-    std::vector<int> top_left = { (grid_size-1) * grid_size + 0 };
-    std::vector<int> top_right = { (grid_size-1) * grid_size + (grid_size-1) };
-    
-    solver.addConstraint(std::make_shared<ClosenessConstraint>(top_left, 10.0, points));
-    solver.addConstraint(std::make_shared<ClosenessConstraint>(top_right, 10.0, points));
+    for (const auto& edge : unique_edges) {
+        std::vector<int> ids = {edge.first, edge.second};
+        solver.addConstraint(std::make_shared<EdgeStrainConstraint>(ids, weight, mesh.vertices));
+    }
+
+    // 3. Fix the boundary nodes
+    std::set<int> boundary = findBoundaryVertices(mesh);
+    for (int idx : boundary) {
+        solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{idx}, 100.0, mesh.vertices));
+    }
 
     // 4. Add Gravity (pointing in -Z direction)
-    // Note: ShapeOp defines forces as accelerations.
     solver.addForces(std::make_shared<GravityForce>(Vector3(0.0, 0.0, -9.81)));
 
     // 5. Initialize the dynamic solver
@@ -67,24 +67,13 @@ int main() {
     solver.initialize(true, 1.0, 0.95, 0.1);
 
     std::cout << "Starting Simulation (10 steps)..." << std::endl;
-    std::cout << std::fixed << std::setprecision(3);
-
     for (int i = 0; i < 10; ++i) {
-        solver.solve(10); // Run 10 internal optimization iterations per timestep
-        const Matrix3X& p = solver.getPoints();
-        
-        // Output the Z-coordinate of the center point (1,1)
-        std::cout << "Step " << i << " | Center Z: " << p(2, 4) << std::endl;
+        solver.solve(10);
     }
 
-    std::cout << "\nFinal Grid Positions (Z coordinates):" << std::endl;
-    const Matrix3X& final_p = solver.getPoints();
-    for (int y = grid_size - 1; y >= 0; --y) {
-        for (int x = 0; x < grid_size; ++x) {
-            std::cout << std::setw(8) << final_p(2, y * grid_size + x) << " ";
-        }
-        std::cout << std::endl;
-    }
+    mesh.vertices = solver.getPoints();
+    writeOFF(output_file, mesh);
+    std::cout << "Saved results to " << output_file << std::endl;
 
     return 0;
 }
