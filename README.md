@@ -1,37 +1,38 @@
-# ShapeOp: Unified Optimization for Geometry Processing
+# ShapeOpPlus: Modernized Optimization for Geometry Processing
 
 ShapeOp is a lightweight C++ library for static and dynamic geometry processing, originally developed by researchers at LGG EPFL. 
 
-**Note on this Repository:** This version of the library is a **re-engineered and modernized fork**. While the core mathematical algorithms remain the work of the original authors (Sofien Bouaziz, Mario Deuss, Bailin Deng, et al.), this repository contains significant architectural updates and modernization work performed by Chaman Singh Verma to ensure compatibility with 2026-standard development environments.
+**Note on this Repository:** This version of the library is a **re-engineered and modernized fork** named **ShapeOpPlus**. While the core mathematical algorithms remain the work of the original authors (Sofien Bouaziz, Mario Deuss, Bailin Deng, et al.), this repository contains significant architectural updates and modernization work performed by **Chaman Singh Verma** to ensure compatibility with 2026-standard production environments.
 
 ---
 
 ## 🛠 Modernization & Re-engineering (Contributions)
 This fork was created to address long-standing compatibility issues and to bring the library up to modern engineering standards. Key contributions include:
 
-*   **Standard Upgrades:** Ported the entire codebase from C++11 to **C++17** to leverage modern standard library features and compiler optimizations (AppleClang 21, GCC 14+).
+*   **Standard Upgrades:** Ported the entire codebase from C++11 to **C++17** to leverage modern standard library features and compiler optimizations.
 *   **Dependency Modernization:** Re-engineered the build system (CMake 3.5+) to support **Eigen 5.0.1+** using semantic versioning. Fixed outdated detection logic that previously blocked modern Eigen support.
-*   **Architectural Flexibility:** Introduced a **Pluggable Solver API** (`Solver::setSolver`). This allows users to hot-swap linear system solvers (Cholesky, Conjugate Gradient, SOR, MINRES) at runtime based on mesh scale and numerical requirements.
+*   **Architectural Flexibility:** Introduced a **Pluggable Solver API** (`Solver::setSolver`). This allows users to hot-swap linear system solvers (**Cholesky, Conjugate Gradient, SOR, MINRES**) at runtime based on mesh scale and numerical requirements.
 *   **Automated Verification:** Developed a comprehensive suite of **24 unit tests** using the **Google Test (GTest)** framework. Every geometric constraint and linear solver is now empirically verified for mathematical correctness.
-*   **Python 3 Support:** Modernized the SWIG-generated bindings and all simulation scripts for **Python 3.14+**, removing dependencies on legacy Python 2.
+*   **Automated CI/CD:** Integrated **GitHub Actions** to automatically build the project and run the full test suite on **Ubuntu** and **macOS** on every commit.
+*   **Python 3 Support:** Fully modernized the SWIG-generated bindings and all simulation scripts for **Python 3.14+**.
 *   **Geometric Extensions:** Implemented the `OrientationConstraint` (previously only theoretical in the documentation), enabling projection-based orientation control.
-*   **Robustness Fixes:** Resolved critical numerical stability issues in iterative solvers (e.g., Eigen MINRES `NaN` fixes) and added missing standard headers (`<cassert>`).
+*   **Robustness Fixes:** Conducted a root-cause analysis and resolved numerical stability issues in the **MINRES** iterative solver (addressing Eigen-specific `NaN` generation).
 
 ### 📐 Functional Engineering Examples
-As part of the re-engineering, I developed a suite of **11 professional-grade CLI tools** that serve as both functional verification and user "recipes" for common geometry processing tasks:
+A suite of **11 professional-grade CLI tools** was developed to serve as both functional verification and user "recipes" for common geometry processing tasks. All tools now accept external **OFF mesh files** as input.
 
-1.  **Mesh Quality Tools:**
+1.  **Mesh Quality & Regularization:**
     *   `area_equalization`: Regularizes meshes so all triangles have identical surface area.
-    *   `equilateral_regularization`: Forces triangles toward perfect equilateral shapes.
+    *   `equilateral_regularization`: Forces triangles toward perfect equilateral shapes for high-quality meshing.
 2.  **Architectural Rationalization:**
-    *   `circular_quads`: Forces quadrilateral mesh faces to be cyclic (all 4 vertices on a circle).
-    *   `quad_planarization`: Planarizes curved quad meshes for architectural glass/panel fabrication.
+    *   `circular_quads`: Forces quadrilateral mesh faces to be cyclic (all 4 vertices on a single circle).
+    *   `quad_planarization`: Planarizes curved quad meshes, a critical task for architectural glass and panel fabrication.
 3.  **Advanced Mapping Suite:**
     *   A complete set of "As-X-As-Possible" mapping tools (**Similar, Rigid, Conformal, Area-Preserving, and Smooth**) to transfer local geometric properties between meshes with different boundaries.
 4.  **Geometric Optimization:**
     *   `minimal_surface`: Computes the "soap film" minimal surface spanning an arbitrary 3D boundary.
     *   `fair_mesh_design`: Performs global surface smoothing by minimizing dihedral bending energy.
-    *   `geodesic_path`: Computes the shortest path (geodesic) between points constrained to a 3D surface.
+    *   `geodesic_path`: Computes the shortest path (geodesic) between points constrained to a 3D surface (e.g., a sphere).
 
 ---
 
@@ -41,7 +42,7 @@ As part of the re-engineering, I developed a suite of **11 professional-grade CL
 ```bash
 mkdir build && cd build
 cmake ..
-make
+make -j4
 ```
 
 ### 2. Run the Unit Tests
@@ -49,20 +50,20 @@ make
 ./tests/unit_tests
 ```
 
-### 3. Usage
-All examples are now production-ready CLI tools that accept OFF mesh files:
+### 3. CLI Usage
+All examples are production-ready tools that accept OFF mesh files. They automatically identify and fix boundary nodes to preserve global geometry.
 ```bash
-# General usage: ./example input.off [output.off]
+# General Optimization: ./example input.off [output.off]
 ./examples/minimal_surface boundary.off result.off
 
-# Mapping usage: ./example source.off target.off [output.off]
-./examples/as_rigid_as_possible_mapping source.off target.off result.off
+# Mapping/Transfer: ./example source.off target.off [output.off]
+./examples/as_similar_as_possible_mapping source.off target.off result.off
 ```
 
 ---
 
 ## 📚 Documentation
-For detailed technical documentation, please refer to the `doc/` directory. You can generate the HTML documentation using Doxygen:
+Detailed technical documentation is available via **GitHub Pages**. Alternatively, you can generate it locally using Doxygen:
 ```bash
 cd doc
 doxygen DoxyShapeOp
