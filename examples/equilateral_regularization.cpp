@@ -83,21 +83,26 @@ int main() {
         solver.addConstraint(sim_cons);
     }
 
-    // 4. Anchor the boundary points
+    // 4. Anchor the boundary points strictly
+    // Using a very high weight (e.g., 1000.0) effectively makes these points immovable.
     for (int i = 0; i < num_points; ++i) {
         int x = i % grid_res;
         int y = i / grid_res;
         if (x == 0 || x == grid_res - 1 || y == 0 || y == grid_res - 1) {
-            solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{i}, 10.0, points));
+            solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{i}, 1000.0, points));
         }
     }
 
     // 5. Solve
     std::cout << "Regularizing mesh to equilateral triangles..." << std::endl;
     solver.initialize();
-    solver.solve(50);
+    solver.solve(100);
 
     const Matrix3X& final_points = solver.getPoints();
+    
+    // Verification: Check if a boundary point (e.g., P0) moved
+    Scalar boundary_displacement = (final_points.col(0) - points.col(0)).norm();
+    std::cout << "Boundary Point P0 displacement: " << boundary_displacement << " (should be ~0)" << std::endl;
     
     std::cout << "Final Positions of internal point (P4):" << std::endl;
     std::cout << final_points.col(4).transpose() << std::endl;

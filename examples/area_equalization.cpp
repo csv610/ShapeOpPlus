@@ -89,20 +89,25 @@ int main() {
         solver.addConstraint(area_cons);
     }
 
-    // 4. Anchor the boundary points to prevent the whole mesh from collapsing/drifting
+    // 4. Anchor the boundary points strictly
+    // Using a very high weight (e.g., 1000.0) effectively makes these points immovable.
     for (int i = 0; i < num_points; ++i) {
         int x = i % grid_res;
         int y = i / grid_res;
         if (x == 0 || x == grid_res - 1 || y == 0 || y == grid_res - 1) {
-            solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{i}, 10.0, points));
+            solver.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{i}, 1000.0, points));
         }
     }
 
     // 5. Solve
     solver.initialize();
-    solver.solve(100); // 100 iterations for high precision
+    solver.solve(100); 
 
     const Matrix3X& final_points = solver.getPoints();
+    
+    // Verification: Check if a boundary point (e.g., P0) moved
+    Scalar boundary_displacement = (final_points.col(0) - points.col(0)).norm();
+    std::cout << "Boundary Point P0 displacement: " << boundary_displacement << " (should be ~0)" << std::endl;
     
     // Calculate final areas
     std::cout << "Final individual areas (should be close to " << avg_area << "):" << std::endl;
