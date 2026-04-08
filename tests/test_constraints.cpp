@@ -276,3 +276,33 @@ TEST(ConstraintTest, Laplacian) {
     EXPECT_EQ(projections.cols(), 1);
 }
 
+TEST(ConstraintTest, OrientationConstraint) {
+    Matrix3X p(3, 3);
+    p << 1.0, 2.0, 3.0,
+         0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0;
+    std::vector<int> ids = {0, 1, 2};
+    // Normal (0,0,1), so plane is z=constant.
+    // After mean centering, plane is z=0.
+    OrientationConstraint oc(ids, 1.0, p, Vector3(0.0, 0.0, 1.0));
+
+    std::vector<Triplet> triplets;
+    int idO = 0;
+    oc.addConstraint(triplets, idO);
+    // OrientationConstraint adds 1 row per point
+    Matrix3X projections(3, 3);
+    
+    // Points already on z=0, but let's give some z offset
+    Matrix3X p_off = p;
+    p_off(2, 0) = 1.0;
+    p_off(2, 1) = 2.0;
+    p_off(2, 2) = 3.0;
+    
+    oc.project(p_off, projections);
+    
+    // Projected points (weighted) should have 0 z-component in mean-centered space.
+    EXPECT_NEAR(projections(2, 0), 0.0, 1e-6);
+    EXPECT_NEAR(projections(2, 1), 0.0, 1e-6);
+    EXPECT_NEAR(projections(2, 2), 0.0, 1e-6);
+}
+

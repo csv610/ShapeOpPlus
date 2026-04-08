@@ -519,6 +519,31 @@ class SHAPEOP_API AngleConstraint : public Constraint {
   Scalar maxAngleCos_;
 };
 ///////////////////////////////////////////////////////////////////////////////
+/** \brief Orientation constraint. Constrains a set of points to lie on a plane with a prescribed orientation.*/
+class SHAPEOP_API OrientationConstraint : public Constraint {
+ public:
+  /** \brief Constraint constructor.
+  \param idI contains the indices of the vertices that want to be on a plane with a given orientation.
+  \param weight The weight of the constraint to be added relative to the other constraints.
+  \param positions The positions of all the n vertices stacked in a 3 by n matrix.
+  \param normal The orientation to be prescribed.
+  */
+  OrientationConstraint(const std::vector<int> &idI,
+                        Scalar weight,
+                        const Matrix3X &positions,
+                        Vector3 normal = Vector3(0.0, 0.0, 1.0));
+  virtual ~OrientationConstraint() {}
+  /** \brief Find the closest configuration from the input positions that satisfy the constraint.*/
+  virtual void project(const Matrix3X &positions, Matrix3X &projections) const override final;
+  /** \brief Add the constraint to the linear system.*/
+  virtual void addConstraint(std::vector<Triplet> &triplets, int &idO) const override final;
+  /** \brief Set a new orientation by a normal.*/
+  void setOrientation(const Vector3 &normal);
+ private:
+  Vector3 normal_;
+  mutable Matrix3X input;
+};
+///////////////////////////////////////////////////////////////////////////////
 } // namespace ShapeOp
 ///////////////////////////////////////////////////////////////////////////////
 #ifdef SHAPEOP_HEADER_ONLY

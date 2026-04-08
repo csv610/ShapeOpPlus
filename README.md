@@ -9,7 +9,7 @@ ShapeOp is a lightweight C++ library for static and dynamic geometry processing,
 ## 🛠 Modernization & Re-engineering
 This fork was created to address long-standing compatibility issues and to bring the library up to modern engineering standards. Key updates include:
 
-*   **Standard Upgrades:** Ported from C++11 to **C++14** to support modern compiler toolchains (AppleClang 21, GCC 14+).
+*   **Standard Upgrades:** Ported from C++11 to **C++17** to support modern compiler toolchains (AppleClang 21, GCC 14+).
 *   **Dependency Modernization:** Re-engineered the build system (CMake 3.5+) to support **Eigen 5.0.1+** (using semantic versioning).
 *   **Architectural Flexibility:** Introduced a **Pluggable Solver API** (`Solver::setSolver`). Users can now swap the underlying linear system solver (Cholesky, Conjugate Gradient, SOR, etc.) at runtime without re-compiling the core library.
 *   **Automated Verification:** Implemented a comprehensive suite of **23 unit tests** using the **Google Test (GTest)** framework, covering all geometric constraints and solvers.

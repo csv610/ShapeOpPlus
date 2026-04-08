@@ -30,7 +30,7 @@ Download the ShapeOp source code from http://shapeop.org/.
  
 ### Compilation under Unix and Mac.
 
-Install CMake 3.5 or higher (http://www.cmake.org) and Eigen 3.3+ (http://eigen.tuxfamily.org/, supports Eigen 5.0.1+) using your favorite package manager. The project now requires a C++14 compatible compiler. Then in the main repository type:
+Install CMake 3.5 or higher (http://www.cmake.org) and Eigen 3.3+ (http://eigen.tuxfamily.org/, supports Eigen 5.0.1+) using your favorite package manager. The project now requires a C++17 compatible compiler. Then in the main repository type:
 
  - mkdir build
  - cd build

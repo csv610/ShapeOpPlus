@@ -46,7 +46,7 @@ SHAPEOP_INLINE void MINRESSolver::initialize(const SparseMatrix &A, unsigned int
 }
 ///////////////////////////////////////////////////////////////////////////////
 SHAPEOP_INLINE VectorX MINRESSolver::solve(const VectorX &b, const VectorX &x0) const {
-  return solver_.solveWithGuess(b, x0);
+  return solver_.solve(b);
 }
 ///////////////////////////////////////////////////////////////////////////////
 SHAPEOP_INLINE Eigen::ComputationInfo MINRESSolver::info() const {

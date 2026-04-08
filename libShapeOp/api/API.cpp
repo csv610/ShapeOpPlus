@@ -145,6 +145,14 @@ extern shapeop_err shapeop_editConstraint(ShapeOpSolver *op,
     c->setMaxAngle(scalars[1]);
     return SO_SUCCESS;
   }
+  if (strcmp(constraintType, "Orientation") == 0) {
+    auto c = std::dynamic_pointer_cast<ShapeOp::OrientationConstraint>(op->s->getConstraint(constraint_id));
+    if (!c) { return SO_UNMATCHING_CONSTRAINT_ID; }
+    if (nb_scl != 3) { return SO_INVALID_ARGUMENT_LENGTH; }
+    Eigen::Map<const ShapeOp::Vector3> n(scalars, 3, 1);
+    c->setOrientation(n);
+    return SO_SUCCESS;
+  }
   return SO_INVALID_CONSTRAINT_TYPE;
 }
 extern int shapeop_addUniformLaplacianConstraint(ShapeOpSolver *op, int *ids, int nb_ids,

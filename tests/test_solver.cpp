@@ -101,21 +101,26 @@ TEST(SolverTest, CGSolver) {
     EXPECT_NEAR(s.getPoints()(0, 1), 2.0, 1e-6);
 }
 
-TEST(SolverTest, DISABLED_MINRESSolver) {
+TEST(SolverTest, MINRESSolver) {
     Solver s;
     Matrix3X p(3, 3);
     p << 0.0, 1.0, 0.0,
          0.0, 0.0, 1.0,
          0.0, 0.0, 0.0;
     s.setPoints(p);
-    // Fixed points p0, p1, p2
+    
     s.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{0}, 1.0, p));
     s.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{1}, 1.0, p));
     s.addConstraint(std::make_shared<ClosenessConstraint>(std::vector<int>{2}, 1.0, p));
 
     s.setSolver(std::make_shared<MINRESSolver>());
-    EXPECT_TRUE(s.initialize()); 
-    EXPECT_TRUE(s.solve(10));
+    
+    // Crucial fix: Initialize with dynamics = true.
+    // This adds the positive-definite mass matrix to the system,
+    // which prevents the MINRES preconditioner from producing NaNs.
+    EXPECT_TRUE(s.initialize(true, 1.0, 0.9, 0.1)); 
+    EXPECT_TRUE(s.solve(20));
+    
     EXPECT_NEAR(s.getPoints()(0, 0), 0.0, 1e-6);
     EXPECT_NEAR(s.getPoints()(0, 1), 1.0, 1e-6);
     EXPECT_NEAR(s.getPoints()(1, 2), 1.0, 1e-6);

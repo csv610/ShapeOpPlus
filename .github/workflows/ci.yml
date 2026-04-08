@@ -1,0 +1,45 @@
+name: C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake libeigen3-dev python3-dev swig
+
+    - name: Install Dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install cmake eigen swig
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DSWIG_PYTHON=ON -DOPENGL_VIEWER=OFF
+
+    - name: Build
+      run: |
+        cd build
+        make -j4
+
+    - name: Run Unit Tests
+      run: |
+        cd build
+        ./tests/unit_tests

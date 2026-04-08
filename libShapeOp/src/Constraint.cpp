@@ -45,6 +45,7 @@ SHAPEOP_INLINE std::shared_ptr<Constraint> Constraint::shapeConstraintFactory(co
   if (constraintType.compare("Laplacian") == 0) {         if (n <  2) { return c; } return std::make_shared<UniformLaplacianConstraint>(idI, weight, positions, false); }
   if (constraintType.compare("LaplacianDisplacement") == 0) {  if (n <  2) { return c; } return std::make_shared<UniformLaplacianConstraint>(idI, weight, positions, true); }
   if (constraintType.compare("Angle") == 0) {   if (n !=  3) { return c; } return std::make_shared<AngleConstraint>(idI, weight, positions); }
+  if (constraintType.compare("Orientation") == 0) { if (n <  1) { return c; } return std::make_shared<OrientationConstraint>(idI, weight, positions); }
   return c;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -890,6 +891,58 @@ SHAPEOP_INLINE void AngleConstraint::setMinAngle(Scalar minAngle) {
 SHAPEOP_INLINE void AngleConstraint::setMaxAngle(Scalar maxAngle) {
   maxAngle_ = (std::min)(maxAngle, M_PI);
   maxAngleCos_ = clamp(std::cos(maxAngle_), -1.0, 1.0);
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+SHAPEOP_INLINE OrientationConstraint::OrientationConstraint(const std::vector<int> &idI,
+                                                            Scalar weight,
+                                                            const Matrix3X &positions,
+                                                            Vector3 normal /*= Vector3(0.0,0.0,1.0)*/) :
+  Constraint(idI, weight) {
+  assert(idI.size() >= 1);
+  setOrientation(normal);
+
+  //Allocate memory for intermediate storage during projection
+  input = Matrix3X::Zero(3, idI.size());
+}
+///////////////////////////////////////////////////////////////////////////////
+SHAPEOP_INLINE void OrientationConstraint::setOrientation(const Vector3 &normal) {
+  normal_ = normal;
+  normal_.normalize();
+}
+///////////////////////////////////////////////////////////////////////////////
+SHAPEOP_INLINE void OrientationConstraint::project(const Matrix3X &positions, Matrix3X &projections) const {
+
+  //Copy the constrained positions to input
+  for (int i = 0; i < static_cast<int>(idI_.size()); ++i) input.col(i) = positions.col(idI_[i]);
+
+  //Compute and subtract mean
+  Vector3 mean_vector = input.rowwise().mean();
+  input.colwise() -= mean_vector;
+
+  //Project each position onto the plane through zero defined by normal_
+  for (int i = 0; i < static_cast<int>(idI_.size()); ++i) {
+    projections.col(idO_ + i) = (input.col(i) - normal_ * (normal_.dot(input.col(i)))) * weight_;
+  }
+}
+///////////////////////////////////////////////////////////////////////////////
+SHAPEOP_INLINE void OrientationConstraint::addConstraint(std::vector<Triplet> &triplets, int &idO) const {
+
+  //Store this constraints position in the global linear system
+  idO_ = idO;
+
+  //Precompute coefficients for mean-centering
+  int n_idx = static_cast<int>(idI_.size());
+  double coef1 = (1.0 - 1.0 / n_idx) * weight_;
+  double coef2 = -weight_ / n_idx;
+
+  //Add triplets to the sparse global linear system.
+  for (int i = 0; i < n_idx; ++i) {
+    for (int j = 0; j < n_idx; ++j)
+      //Add the coefficent for mean-centering to the sparse linear system at column id0 and row idI_[j].
+      triplets.push_back(Triplet(idO, idI_[j], (i == j ? coef1 : coef2)));
+    idO++;
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace ShapeOp

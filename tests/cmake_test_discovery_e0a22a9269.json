@@ -1,5 +1,5 @@
 {
-  "tests": 23,
+  "tests": 24,
   "name": "AllTests",
   "testsuites": [
     {
@@ -32,20 +32,20 @@
           "line": 86
         },
         {
-          "name": "DISABLED_MINRESSolver",
+          "name": "MINRESSolver",
           "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
           "line": 104
         },
         {
           "name": "SORSolver",
           "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
-          "line": 124
+          "line": 129
         }
       ]
     },
     {
       "name": "ConstraintTest",
-      "tests": 16,
+      "tests": 17,
       "testsuite": [
         {
           "name": "EdgeStrain",
@@ -126,6 +126,11 @@
           "name": "Laplacian",
           "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
           "line": 264
+        },
+        {
+          "name": "OrientationConstraint",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 279
         }
       ]
     }
