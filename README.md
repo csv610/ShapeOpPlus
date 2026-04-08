@@ -6,15 +6,32 @@ ShapeOp is a lightweight C++ library for static and dynamic geometry processing,
 
 ---
 
-## 🛠 Modernization & Re-engineering
-This fork was created to address long-standing compatibility issues and to bring the library up to modern engineering standards. Key updates include:
+## 🛠 Modernization & Re-engineering (Contributions)
+This fork was created to address long-standing compatibility issues and to bring the library up to modern engineering standards. Key contributions include:
 
-*   **Standard Upgrades:** Ported from C++11 to **C++17** to support modern compiler toolchains (AppleClang 21, GCC 14+).
-*   **Dependency Modernization:** Re-engineered the build system (CMake 3.5+) to support **Eigen 5.0.1+** (using semantic versioning).
-*   **Architectural Flexibility:** Introduced a **Pluggable Solver API** (`Solver::setSolver`). Users can now swap the underlying linear system solver (Cholesky, Conjugate Gradient, SOR, etc.) at runtime without re-compiling the core library.
-*   **Automated Verification:** Implemented a comprehensive suite of **23 unit tests** using the **Google Test (GTest)** framework, covering all geometric constraints and solvers.
-*   **Python 3 Support:** Fully modernized the SWIG-generated bindings and example scripts for **Python 3.14+**.
-*   **Bug Fixes:** Resolved several legacy issues, including illegal internal header inclusions, missing `<cassert>` headers, and outdated Eigen detection logic.
+*   **Standard Upgrades:** Ported the entire codebase from C++11 to **C++17** to leverage modern standard library features and compiler optimizations (AppleClang 21, GCC 14+).
+*   **Dependency Modernization:** Re-engineered the build system (CMake 3.5+) to support **Eigen 5.0.1+** using semantic versioning. Fixed outdated detection logic that previously blocked modern Eigen support.
+*   **Architectural Flexibility:** Introduced a **Pluggable Solver API** (`Solver::setSolver`). This allows users to hot-swap linear system solvers (Cholesky, Conjugate Gradient, SOR, MINRES) at runtime based on mesh scale and numerical requirements.
+*   **Automated Verification:** Developed a comprehensive suite of **24 unit tests** using the **Google Test (GTest)** framework. Every geometric constraint and linear solver is now empirically verified for mathematical correctness.
+*   **Python 3 Support:** Modernized the SWIG-generated bindings and all simulation scripts for **Python 3.14+**, removing dependencies on legacy Python 2.
+*   **Geometric Extensions:** Implemented the `OrientationConstraint` (previously only theoretical in the documentation), enabling projection-based orientation control.
+*   **Robustness Fixes:** Resolved critical numerical stability issues in iterative solvers (e.g., Eigen MINRES `NaN` fixes) and added missing standard headers (`<cassert>`).
+
+### 📐 Functional Engineering Examples
+As part of the re-engineering, I developed a suite of **11 professional-grade CLI tools** that serve as both functional verification and user "recipes" for common geometry processing tasks:
+
+1.  **Mesh Quality Tools:**
+    *   `area_equalization`: Regularizes meshes so all triangles have identical surface area.
+    *   `equilateral_regularization`: Forces triangles toward perfect equilateral shapes.
+2.  **Architectural Rationalization:**
+    *   `circular_quads`: Forces quadrilateral mesh faces to be cyclic (all 4 vertices on a circle).
+    *   `quad_planarization`: Planarizes curved quad meshes for architectural glass/panel fabrication.
+3.  **Advanced Mapping Suite:**
+    *   A complete set of "As-X-As-Possible" mapping tools (**Similar, Rigid, Conformal, Area-Preserving, and Smooth**) to transfer local geometric properties between meshes with different boundaries.
+4.  **Geometric Optimization:**
+    *   `minimal_surface`: Computes the "soap film" minimal surface spanning an arbitrary 3D boundary.
+    *   `fair_mesh_design`: Performs global surface smoothing by minimizing dihedral bending energy.
+    *   `geodesic_path`: Computes the shortest path (geodesic) between points constrained to a 3D surface.
 
 ---
 
@@ -32,23 +49,15 @@ make
 ./tests/unit_tests
 ```
 
-### 3. Explore Examples
-We have provided several new examples to showcase the library's capabilities:
-*   **C++ Cloth Simulation:** `./examples/cloth_simulation input.off [output.off]` (Dynamic physics)
-*   **C++ Capabilities Showcase:** `./examples/capabilities_showcase input.off [output.off]` (Advanced constraints)
-*   **Python Catenary Curve:** `PYTHONPATH=libShapeOp/bindings/python python3 examples/catenary_curve.py`
-*   **Triangle Area Equalization:** `./examples/area_equalization input.off [output.off]` (Mesh regularization)
-*   **Equilateral Regularization:** `./examples/equilateral_regularization input.off [output.off]` (Mesh quality)
-*   **Cyclic Quads:** `./examples/circular_quads input.off [output.off]` (Architectural geometry)
-*   **As-Similar-As-Possible Mapping:** `./examples/as_similar_as_possible_mapping source.off target.off [output.off]` (Shape transfer)
-*   **As-Rigid-As-Possible Mapping:** `./examples/as_rigid_as_possible_mapping source.off target.off [output.off]` (Rigid transfer)
-*   **As-Conformal-As-Possible Mapping:** `./examples/as_conformal_as_possible_mapping source.off target.off [output.off]` (Angle transfer)
-*   **As-Area-Preserving Mapping:** `./examples/as_area_preserving_as_possible_mapping source.off target.off [output.off]` (Area transfer)
-*   **As-Smooth-As-Possible Mapping:** `./examples/as_smooth_as_possible_mapping source.off target.off [output.off]` (Smoothness transfer)
-*   **Minimal Surface:** `./examples/minimal_surface input.off [output.off]` (Soap film finding)
-*   **Fair Mesh Design:** `./examples/fair_mesh_design input.off [output.off]` (Surface smoothing)
-*   **Quad Planarization:** `./examples/quad_planarization input.off [output.off]` (Face planarization)
-*   **Geodesic Path:** `./examples/geodesic_path input.off [output.off]` (Shortest path on sphere)
+### 3. Usage
+All examples are now production-ready CLI tools that accept OFF mesh files:
+```bash
+# General usage: ./example input.off [output.off]
+./examples/minimal_surface boundary.off result.off
+
+# Mapping usage: ./example source.off target.off [output.off]
+./examples/as_rigid_as_possible_mapping source.off target.off result.off
+```
 
 ---
 
