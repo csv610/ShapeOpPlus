@@ -1,0 +1,133 @@
+{
+  "tests": 23,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "SolverTest",
+      "tests": 7,
+      "testsuite": [
+        {
+          "name": "BasicInitialization",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 8
+        },
+        {
+          "name": "SimpleSolve",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 20
+        },
+        {
+          "name": "Dynamics",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 47
+        },
+        {
+          "name": "LDLTSolver",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 68
+        },
+        {
+          "name": "CGSolver",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 86
+        },
+        {
+          "name": "DISABLED_MINRESSolver",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 104
+        },
+        {
+          "name": "SORSolver",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_solver.cpp",
+          "line": 124
+        }
+      ]
+    },
+    {
+      "name": "ConstraintTest",
+      "tests": 16,
+      "testsuite": [
+        {
+          "name": "EdgeStrain",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 6
+        },
+        {
+          "name": "Factory",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 44
+        },
+        {
+          "name": "PlaneConstraint",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 55
+        },
+        {
+          "name": "AngleConstraint",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 80
+        },
+        {
+          "name": "TriangleStrain",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 99
+        },
+        {
+          "name": "TetrahedronStrain",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 114
+        },
+        {
+          "name": "Area",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 129
+        },
+        {
+          "name": "Volume",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 144
+        },
+        {
+          "name": "Bending",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 159
+        },
+        {
+          "name": "Circle",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 174
+        },
+        {
+          "name": "Sphere",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 189
+        },
+        {
+          "name": "Similarity",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 204
+        },
+        {
+          "name": "Rigid",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 219
+        },
+        {
+          "name": "Rectangle",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 234
+        },
+        {
+          "name": "Parallelogram",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 249
+        },
+        {
+          "name": "Laplacian",
+          "file": "\/Users\/csv610\/Projects\/Mesh\/ShapeOp\/tests\/test_constraints.cpp",
+          "line": 264
+        }
+      ]
+    }
+  ]
+}
