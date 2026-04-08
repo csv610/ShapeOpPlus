@@ -39,3 +39,10 @@ target_include_directories(as_similar_as_possible_mapping PRIVATE
   ${EIGEN3_INCLUDE_DIR}
 )
 target_link_libraries(as_similar_as_possible_mapping ShapeOp)
+
+add_executable(as_rigid_as_possible_mapping as_rigid_as_possible_mapping.cpp)
+target_include_directories(as_rigid_as_possible_mapping PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(as_rigid_as_possible_mapping ShapeOp)
