@@ -14,3 +14,8 @@ cmake_install.cmake
 examples/cloth_simulation
 examples/capabilities_showcase
 tests/unit_tests
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
