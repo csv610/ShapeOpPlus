@@ -42,6 +42,7 @@ We have provided several new examples to showcase the library's capabilities:
 *   **Cyclic Quads:** `./examples/circular_quads` (Architectural geometry)
 *   **As-Similar-As-Possible Mapping:** `./examples/as_similar_as_possible_mapping source.off target.off` (Shape transfer)
 *   **As-Rigid-As-Possible Mapping:** `./examples/as_rigid_as_possible_mapping source.off target.off` (Rigid transfer)
+*   **As-Conformal-As-Possible Mapping:** `./examples/as_conformal_as_possible_mapping source.off target.off` (Angle transfer)
 
 ---
 
