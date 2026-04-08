@@ -45,6 +45,10 @@ We have provided several new examples to showcase the library's capabilities:
 *   **As-Conformal-As-Possible Mapping:** `./examples/as_conformal_as_possible_mapping source.off target.off` (Angle transfer)
 *   **As-Area-Preserving Mapping:** `./examples/as_area_preserving_as_possible_mapping source.off target.off` (Area transfer)
 *   **As-Smooth-As-Possible Mapping:** `./examples/as_smooth_as_possible_mapping source.off target.off` (Smoothness transfer)
+*   **Minimal Surface:** `./examples/minimal_surface` (Soap film finding)
+*   **Fair Mesh Design:** `./examples/fair_mesh_design` (Surface smoothing)
+*   **Quad Planarization:** `./examples/quad_planarization` (Face planarization)
+*   **Geodesic Path:** `./examples/geodesic_path` (Shortest path on sphere)
 
 ---
 

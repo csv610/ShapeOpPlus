@@ -67,3 +67,31 @@ target_include_directories(as_smooth_as_possible_mapping PRIVATE
   ${EIGEN3_INCLUDE_DIR}
 )
 target_link_libraries(as_smooth_as_possible_mapping ShapeOp)
+
+add_executable(minimal_surface minimal_surface.cpp)
+target_include_directories(minimal_surface PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(minimal_surface ShapeOp)
+
+add_executable(fair_mesh_design fair_mesh_design.cpp)
+target_include_directories(fair_mesh_design PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(fair_mesh_design ShapeOp)
+
+add_executable(quad_planarization quad_planarization.cpp)
+target_include_directories(quad_planarization PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(quad_planarization ShapeOp)
+
+add_executable(geodesic_path geodesic_path.cpp)
+target_include_directories(geodesic_path PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(geodesic_path ShapeOp)
