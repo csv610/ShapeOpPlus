@@ -25,3 +25,10 @@ target_include_directories(equilateral_regularization PRIVATE
   ${EIGEN3_INCLUDE_DIR}
 )
 target_link_libraries(equilateral_regularization ShapeOp)
+
+add_executable(circular_quads circular_quads.cpp)
+target_include_directories(circular_quads PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(circular_quads ShapeOp)

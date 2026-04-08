@@ -65,6 +65,18 @@ From the project root (after building):
 ```bash
 ./examples/equilateral_regularization
 ```
+
+## 6. Cyclic Quadrilateral Regularization (C++)
+Demonstrates forcing every quadrilateral in a mesh to be "cyclic" (all 4 vertices on a common circle):
+- Applies `CircleConstraint` to the 4 vertices of each quad element.
+- Anchors boundary nodes to preserve the global structure.
+- Verifies the results by checking the radial distance from each vertex to its quad's centroid.
+
+**To run:**
+From the project root (after building):
+```bash
+./examples/circular_quads
+```
 1. **Include Headers:** Use `Solver.h`, `Constraint.h`, and `Force.h`.
 2. **Define Points:** Provide point coordinates as a `Matrix3X`.
 3. **Add Constraints:** Use `solver.addConstraint()` with various constraint types.
