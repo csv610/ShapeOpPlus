@@ -41,6 +41,18 @@ From the project root (after building):
 ```bash
 ./examples/capabilities_showcase
 ```
+
+## 4. Triangle Area Equalization (C++)
+Demonstrates regularizing a 2D mesh so that all triangles have equal area:
+- Calculates the initial average area of the mesh.
+- Uses `AreaConstraint` with dynamic target ratios to force each triangle to the average.
+- Anchors the boundary points to maintain the overall geometry.
+
+**To run:**
+From the project root (after building):
+```bash
+./examples/area_equalization
+```
 1. **Include Headers:** Use `Solver.h`, `Constraint.h`, and `Force.h`.
 2. **Define Points:** Provide point coordinates as a `Matrix3X`.
 3. **Add Constraints:** Use `solver.addConstraint()` with various constraint types.

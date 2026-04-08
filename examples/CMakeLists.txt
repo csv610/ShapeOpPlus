@@ -11,3 +11,10 @@ target_include_directories(capabilities_showcase PRIVATE
   ${EIGEN3_INCLUDE_DIR}
 )
 target_link_libraries(capabilities_showcase ShapeOp)
+
+add_executable(area_equalization area_equalization.cpp)
+target_include_directories(area_equalization PRIVATE
+  ${CMAKE_SOURCE_DIR}/libShapeOp/src
+  ${EIGEN3_INCLUDE_DIR}
+)
+target_link_libraries(area_equalization ShapeOp)
