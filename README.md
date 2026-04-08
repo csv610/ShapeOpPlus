@@ -34,9 +34,13 @@ make
 
 ### 3. Explore Examples
 We have provided several new examples to showcase the library's capabilities:
-*   **C++ Cloth Simulation:** `./examples/cloth_simulation`
-*   **C++ Capabilities Showcase:** `./examples/capabilities_showcase`
+*   **C++ Cloth Simulation:** `./examples/cloth_simulation` (Dynamic physics)
+*   **C++ Capabilities Showcase:** `./examples/capabilities_showcase` (Advanced constraints)
 *   **Python Catenary Curve:** `PYTHONPATH=libShapeOp/bindings/python python3 examples/catenary_curve.py`
+*   **Triangle Area Equalization:** `./examples/area_equalization` (Mesh regularization)
+*   **Equilateral Regularization:** `./examples/equilateral_regularization` (Mesh quality)
+*   **Cyclic Quads:** `./examples/circular_quads` (Architectural geometry)
+*   **As-Similar-As-Possible Mapping:** `./examples/as_similar_as_possible_mapping source.off target.off` (Shape transfer)
 
 ---
 
