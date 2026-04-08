@@ -96,11 +96,34 @@ int main() {
     }
 
     // 4. Initialize and solve
+    auto calculate_total_bending_energy = [&](const Matrix3X& v) {
+        Scalar total = 0;
+        int count = 0;
+        for (int y = 1; y < grid_size - 1; ++y) {
+            for (int x = 1; x < grid_size - 1; ++x) {
+                int id = y * grid_size + x;
+                // Measure displacement from zero plane (since our target is a flat plane)
+                total += v(2, id) * v(2, id);
+                count++;
+            }
+        }
+        return total / count; // Mean Squared Error from flat
+    };
+
+    Scalar initial_energy = calculate_total_bending_energy(points);
     solver.initialize();
     std::cout << "Smoothing mesh..." << std::endl;
     solver.solve(50);
 
-    std::cout << "Mesh faired." << std::endl;
+    Scalar final_energy = calculate_total_bending_energy(solver.getPoints());
+
+    std::cout << "\n--- Optimization Metrics ---" << std::endl;
+    std::cout << "Metric               | Value" << std::endl;
+    std::cout << "------------------------------------------" << std::endl;
+    printf("Initial MSE (Noise)  | %.6f\n", initial_energy);
+    printf("Final MSE (Noise)    | %.6f\n", final_energy);
+    printf("Reduction (%%)        | %.2f%%\n", (1.0 - final_energy/initial_energy)*100.0);
+    std::cout << "------------------------------------------" << std::endl;
 
     return 0;
 }

@@ -56,12 +56,32 @@ int main() {
     solver.addConstraint(std::make_shared<ClosenessConstraint>(end_id, fix_weight, points));
 
     // 5. Initialize and solve
+    auto calculate_path_metrics = [&](const Matrix3X& v) {
+        Scalar length = 0;
+        Scalar rms_surface_error = 0;
+        for (int i = 0; i < num_points; ++i) {
+            if (i < num_points - 1) length += (v.col(i+1) - v.col(i)).norm();
+            Scalar r = v.col(i).norm();
+            rms_surface_error += (r - 1.0) * (r - 1.0);
+        }
+        return std::make_pair(length, std::sqrt(rms_surface_error / num_points));
+    };
+
+    auto initial_metrics = calculate_path_metrics(points);
     solver.initialize();
     std::cout << "Finding geodesic path..." << std::endl;
     solver.solve(100);
 
-    const Matrix3X& result = solver.getPoints();
-    std::cout << "Path found. Midpoint Z: " << result(2, num_points / 2) << std::endl;
+    auto final_metrics = calculate_path_metrics(solver.getPoints());
+
+    std::cout << "\n--- Optimization Metrics ---" << std::endl;
+    std::cout << "Metric               | Value" << std::endl;
+    std::cout << "------------------------------------------" << std::endl;
+    printf("Initial Path Length  | %.6f\n", initial_metrics.first);
+    printf("Final Path Length    | %.6f\n", final_metrics.first);
+    printf("RMS Surface Error    | %.6f\n", final_metrics.second);
+    printf("Reduction (%%)        | %.2f%%\n", (1.0 - final_metrics.first/initial_metrics.first)*100.0);
+    std::cout << "------------------------------------------" << std::endl;
 
     return 0;
 }

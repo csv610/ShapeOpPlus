@@ -73,15 +73,42 @@ int main() {
     }
 
     // 4. Initialize and solve
+    auto calculate_total_area = [&](const Matrix3X& v) {
+        Scalar total = 0;
+        for (int y = 0; y < grid_size - 1; ++y) {
+            for (int x = 0; x < grid_size - 1; ++x) {
+                int i00 = y * grid_size + x;
+                int i10 = y * grid_size + (x + 1);
+                int i01 = (y + 1) * grid_size + x;
+                int i11 = (y + 1) * grid_size + (x + 1);
+                // Triangle 1
+                Vector3 e1 = v.col(i10) - v.col(i00);
+                Vector3 e2 = v.col(i11) - v.col(i00);
+                total += 0.5 * e1.cross(e2).norm();
+                // Triangle 2
+                Vector3 e3 = v.col(i11) - v.col(i00);
+                Vector3 e4 = v.col(i01) - v.col(i00);
+                total += 0.5 * e3.cross(e4).norm();
+            }
+        }
+        return total;
+    };
+
+    Scalar initial_area = calculate_total_area(points);
     solver.initialize();
     std::cout << "Solving for minimal surface..." << std::endl;
-    solver.solve(100); // 100 iterations for convergence
+    solver.solve(100); 
 
     const Matrix3X& result = solver.getPoints();
-    std::cout << "Convergence reached." << std::endl;
+    Scalar final_area = calculate_total_area(result);
 
-    // Output some results
-    std::cout << "Center point (z): " << result(2, (grid_size/2) * grid_size + (grid_size/2)) << std::endl;
+    std::cout << "\n--- Optimization Metrics ---" << std::endl;
+    std::cout << "Metric               | Value" << std::endl;
+    std::cout << "------------------------------------------" << std::endl;
+    printf("Initial Total Area   | %.6f\n", initial_area);
+    printf("Final Total Area     | %.6f\n", final_area);
+    printf("Reduction (%%)        | %.2f%%\n", (1.0 - final_area/initial_area)*100.0);
+    std::cout << "------------------------------------------" << std::endl;
 
     return 0;
 }
