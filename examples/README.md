@@ -53,6 +53,18 @@ From the project root (after building):
 ```bash
 ./examples/area_equalization
 ```
+
+## 5. Equilateral Triangle Regularization (C++)
+Demonstrates how to force triangles in a 2D mesh to become as equilateral as possible:
+- Defines a perfect equilateral triangle as a target shape.
+- Uses `SimilarityConstraint` on every triangle to match the target shape (allowing for rotation and uniform scaling).
+- Shows how the solver balances local shape goals with global boundary constraints.
+
+**To run:**
+From the project root (after building):
+```bash
+./examples/equilateral_regularization
+```
 1. **Include Headers:** Use `Solver.h`, `Constraint.h`, and `Force.h`.
 2. **Define Points:** Provide point coordinates as a `Matrix3X`.
 3. **Add Constraints:** Use `solver.addConstraint()` with various constraint types.
