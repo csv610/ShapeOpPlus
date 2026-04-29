@@ -36,6 +36,26 @@ A suite of **11 professional-grade CLI tools** was developed to serve as both fu
 
 ---
 
+## 📦 External Libraries & Versions
+
+| Library | Version | Source | Notes |
+|---------|---------|--------|-------|
+| **Eigen3** | 5.0.1 | System (Homebrew) | Linear algebra |
+| **GLFW** | 3.4 | System | Window/input handling |
+| **GLEW** | 2.2.0 | System | OpenGL extensions |
+| **OpenGL** | System | System | Graphics library |
+| **OpenGP** | 1.0 | Bundled | Header-only |
+| **OpenMP** | 5.2 | System (optional) | Parallelization |
+| **Google Test** | 1.14.0 | FetchContent | Unit testing |
+| **Python** | 3.14+ | System | Bindings |
+
+### System Requirements
+- **macOS**: Eigen3 available via `brew install eigen`
+- **Ubuntu**: Eigen3 available via `sudo apt-get install libeigen3-dev`
+- **Windows**: Eigen3 included via vcpkg or manual install
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Build the Project
