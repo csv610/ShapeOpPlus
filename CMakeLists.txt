@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(ShapeOp)
 
+# Eigen3 (system)
+set(EIGEN3_INCLUDE_DIR "/opt/homebrew/include/eigen3")
+
 #Versioning
 set(SHAPEOP_VERSION_MAJOR 0)
 set(SHAPEOP_VERSION_MINOR 1)

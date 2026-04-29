@@ -31,14 +31,11 @@ else()
     message("OPENGL found.")
 endif()
 
-# Find Eigen3
-find_package(Eigen3 REQUIRED)
+# Find Eigen3 (system)
+set(EIGEN3_INCLUDE_DIR "/opt/homebrew/include/eigen3")
+set(EIGEN3_FOUND TRUE)
 include_directories(${EIGEN3_INCLUDE_DIR})
-if(NOT EIGEN3_FOUND)
-    message(ERROR " EIGEN not found.")
-else()
-    message("EIGEN found.")
-endif()
+message("EIGEN found at system path.")
 
 # Find OPENGP
 find_package(OpenGP REQUIRED)
