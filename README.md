@@ -46,7 +46,7 @@ A suite of **11 professional-grade CLI tools** was developed to serve as both fu
 | **OpenGL** | System | System | Graphics library |
 | **OpenGP** | 1.0 | Bundled | Header-only |
 | **OpenMP** | 5.2 | System (optional) | Parallelization |
-| **Google Test** | 1.14.0 | FetchContent | Unit testing |
+| **Google Test** | 1.17.0 | System | Unit testing |
 | **Python** | 3.14+ | System | Bindings |
 
 ### System Requirements
